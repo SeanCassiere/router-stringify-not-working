@@ -14,6 +14,7 @@ import {
   useAction,
   ReactRouter,
   createRouteConfig,
+  useParams,
 } from '@tanstack/react-router';
 
 import {
@@ -38,6 +39,7 @@ function b64_encode(str: string) {
 
 function b64_decode(str: string) {
   const decoded = decodeURIComponent(atob(str));
+  console.log('b64_decode for', str);
   return decoded;
 }
 
@@ -355,11 +357,11 @@ const invoicesIndexRoute = invoicesRoute.createRoute({
 
 const invoiceRoute = invoicesRoute.createRoute({
   path: '$invoiceId',
-  parseParams: (params) => ({
+  parseParams: ({ invoiceId }) => ({
     invoiceId: z
       .number()
       .int()
-      .parse(Number(b64_decode(params.invoiceId))),
+      .parse(Number(b64_decode(`${invoiceId}`))),
   }),
   stringifyParams: ({ invoiceId }) => ({
     invoiceId: b64_encode(`${invoiceId}`),
@@ -388,6 +390,7 @@ const invoiceRoute = invoicesRoute.createRoute({
     const search = useSearch({ from: invoiceRoute.id });
     const { latestSubmission } = useAction(updateInvoiceAction);
     const navigate = useNavigate({ from: invoiceRoute.id });
+    const { invoiceId } = useParams({ from: invoiceRoute.id });
 
     const [notes, setNotes] = React.useState(search.notes ?? '');
 
@@ -400,6 +403,10 @@ const invoiceRoute = invoicesRoute.createRoute({
         replace: true,
       });
     }, [notes]);
+
+    React.useEffect(() => {
+      console.log('useEffect invoiceId', invoiceId);
+    }, [invoiceId]);
 
     return (
       <form
