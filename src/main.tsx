@@ -31,13 +31,13 @@ import { z } from 'zod';
 
 // base64 functions
 function b64_encode(str: string) {
-  const encoded = window.btoa(encodeURIComponent(str));
+  const encoded = btoa(encodeURIComponent(str));
   console.log('b64_encode for', str);
   return encoded;
 }
 
 function b64_decode(str: string) {
-  const decoded = decodeURIComponent(window.atob(str));
+  const decoded = decodeURIComponent(atob(str));
   return decoded;
 }
 
@@ -372,6 +372,7 @@ const invoiceRoute = invoicesRoute.createRoute({
       })
       .parse(search),
   loader: async ({ params: { invoiceId }, search: {} }) => {
+    console.log('loader invoiceId', invoiceId);
     const invoice = await fetchInvoiceById(invoiceId);
 
     if (!invoice) {
